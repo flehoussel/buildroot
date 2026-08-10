@@ -10,9 +10,10 @@ CONFIGS_DIR=${EXTERNAL_DIR}/configs
 usage() {
     echo "Usage: $0 <board> [options]"
     echo "Options:"
+    echo "    -f,--force   - Clean target/images/install stamps to force reinstall (do not work if RM_WORK is set)"
     echo "    -s,--shell   - Init board environment and enter the shell"
-    echo "    -r,--rmwork  - Configure RM_WORK option to clean package build directories (saves space)"
     echo "    -v,--verbose - Enable verbose mode"
+    echo "    -r,--rmwork  - Configure RM_WORK option to clean package build directories (saves space)"
     echo "    -h,--help    - Show this help message"
 }
 
@@ -32,9 +33,14 @@ shift
 SHELL_MODE=0
 RMWORK_MODE=0
 BUILD_VERBOSE=0
+FORCE_INSTALL=0
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
+        -f|--force)
+            FORCE_INSTALL=1
+            shift
+            ;;
         -s|--shell)
             SHELL_MODE=1
             shift
@@ -128,6 +134,17 @@ if [ "$RMWORK_MODE" -eq 1 ]; then
     echo "RM_WORK=y" >> "${OUTPUT}/local.mk"
 else
     [ -f "${OUTPUT}/local.mk" ] && sed -i '/RM_WORK/d' "${OUTPUT}/local.mk"
+fi
+
+##
+## Clean target and images dir and build stamp to force reinstall clean target
+##
+if [ "${FORCE_INSTALL}" -eq 1 ]; then
+    echo "Cleaning target/images directories and install stamps"
+    rm -rf "${OUTPUT}/target"
+    find "${OUTPUT}/build" -name ".stamp_target_installed" -exec rm {} \;
+    rm -rf "${OUTPUT}/images"
+    find "${OUTPUT}/build" -name ".stamp_images_installed" -exec rm {} \;
 fi
 
 # cd to output directory
