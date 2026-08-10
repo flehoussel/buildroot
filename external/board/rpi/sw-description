@@ -8,9 +8,8 @@ software =
 			part1 : {
 				images: (
 					{
-						filename = "rootfs.ext4";
+						filename = "rootfs.erofs";
 						type = "raw";
-						compressed = "zlib";
                         installed-directly = true;
 						device = "/dev/mmcblk0p2";
 					}
@@ -29,9 +28,8 @@ software =
 			part2 : {
 				images: (
 					{
-						filename = "rootfs.ext4";
+						filename = "rootfs.erofs";
 						type = "raw";
-						compressed = "zlib";
                         installed-directly = true;
 						device = "/dev/mmcblk0p3";
 					}
