@@ -47,6 +47,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Cache Buildroot downloads
+        uses: actions/cache@v4
+        with:
+          path: dl
+          key: buildroot-dl-${{ github.run_id }}
+          restore-keys: |
+            buildroot-dl-
+
       - name: Build Docker image
         run: CONTAINER_ENGINE=docker ./docker-dev.sh build
 
