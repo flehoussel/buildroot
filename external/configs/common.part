@@ -1,3 +1,6 @@
+# Share download directory
+BR2_DL_DIR="$(TOPDIR)/../dl"
+
 # Packages to bundle
 BR2_PACKAGE_NANO=y
 BR2_PACKAGE_HAVEGED=y
