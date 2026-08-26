@@ -1,0 +1,5 @@
+# board/common/kernel.config disables CONFIG_RTC_CLASS project-wide, but the
+# uwe5622 Bluetooth driver (tty-sdio/dump.c) calls rtc_time64_to_tm() to
+# timestamp its debug dumps, which is only linkable when CONFIG_RTC_CLASS is
+# enabled. Re-enable it here rather than in the shared fragment.
+CONFIG_RTC_CLASS=y
