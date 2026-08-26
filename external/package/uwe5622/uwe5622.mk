@@ -18,7 +18,8 @@ UWE5622_MODULE_MAKE_OPTS = \
 	CONFIG_AW_WIFI_DEVICE_UWE5622=y \
 	CONFIG_WLAN_UWE5622=m \
 	CONFIG_UNISOC_WIFI_PS=$(BR2_PACKAGE_UWE5622_WIFI_PS) \
-	UNISOC_FW_PATH_CONFIG=/lib/firmware/uwe5622/
+	UNISOC_FW_PATH_CONFIG=/lib/firmware/uwe5622/ \
+	UNISOC_WIFI_CUS_CONFIG=/lib/firmware/uwe5622
 
 # Firmware isn't bundled in the armbian/uwe5622 driver repo itself;
 # it lives in armbian/firmware. Grab just the files needed for this
