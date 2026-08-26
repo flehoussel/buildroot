@@ -1,0 +1,43 @@
+From: aa-proxy <noreply@localhost>
+Subject: [PATCH] Bluetooth: skip HCI_OP_WRITE_DEF_LINK_POLICY entirely for sprd
+
+On top of 0001-bluetooth-fix-sprd-broken-park-link-status.patch (Paolo
+Sabatino's upstream quirk, also shipped in Orange Pi's vendor kernel):
+that patch only strips the HCI_LP_PARK bit from the
+HCI_OP_WRITE_DEF_LINK_POLICY payload before sending it, on the
+assumption the chip only mishandles "park" specifically.
+
+On our AW859A/UWE5622 (firmware MARLIN3_19B_W21.05.3 /
+sc2355_marlin3_lite_ott), the command still fails
+("Opcode 0x080f failed: -22" / "Can't init device: Invalid argument")
+regardless of the policy bits requested - confirmed on both mainline
+and Orange Pi's own vendor kernel, which carries the same upstream
+quirk and hits the same failure. Skip sending the command entirely
+for devices with the quirk set instead of only adjusting its payload.
+
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4109,6 +4109,14 @@
+ 	if (!(hdev->commands[5] & 0x10))
+ 		return 0;
+
++	/* Some sprd/uwe5622 (ttyBT) firmware revisions reject
++	 * HCI_OP_WRITE_DEF_LINK_POLICY outright, regardless of the policy
++	 * bits requested, not just when HCI_LP_PARK is set. Skip sending
++	 * the command entirely for those.
++	 */
++	if (test_bit(HCI_QUIRK_BROKEN_PARK_LINK_STATUS, &hdev->quirks))
++		return 0;
++
+ 	memset(&cp, 0, sizeof(cp));
+
+ 	if (lmp_rswitch_capable(hdev))
+@@ -4117,7 +4125,7 @@
+ 		link_policy |= HCI_LP_HOLD;
+ 	if (lmp_sniff_capable(hdev))
+ 		link_policy |= HCI_LP_SNIFF;
+-	if (lmp_park_capable(hdev) && !test_bit(HCI_QUIRK_BROKEN_PARK_LINK_STATUS, &hdev->quirks))
++	if (lmp_park_capable(hdev))
+ 		link_policy |= HCI_LP_PARK;
+
+ 	cp.policy = cpu_to_le16(link_policy);
