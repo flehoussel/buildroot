@@ -26,10 +26,9 @@ diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
 index 111111111111..222222222222 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -77,3 +77,4 @@ obj-y				+= keba/
+@@ -76,2 +76,3 @@ obj-y				+= keba/
  obj-y				+= amd-sbi/
  obj-$(CONFIG_MISC_RP1)		+= rp1/
- obj-$(CONFIG_MODEM_POWER)	+= modem-power.o
 +obj-$(CONFIG_SUNXI_ADDR_MGT)    += sunxi-addr/
 diff --git a/drivers/misc/sunxi-addr/Kconfig b/drivers/misc/sunxi-addr/Kconfig
 new file mode 100644
