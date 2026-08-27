@@ -938,7 +938,7 @@ index 000000000000..ce7814c22057
 +		return;
 +	}
 +
-+	hid_report_raw_event(hid->hid, HID_INPUT_REPORT, req->buf, length, 1);
++	hid_report_raw_event(hid->hid, HID_INPUT_REPORT, req->buf, length, length, 1);
 +}
 +
 +static int acc_hid_parse(struct hid_device *hid)
