@@ -1,0 +1,24 @@
+# board/common/kernel.config disables CONFIG_RTC_CLASS project-wide, but the
+# uwe5622 Bluetooth driver (tty-sdio/dump.c) calls rtc_time64_to_tm() to
+# timestamp its debug dumps, which is only linkable when CONFIG_RTC_CLASS is
+# enabled. Re-enable it here rather than in the shared fragment.
+CONFIG_RTC_CLASS=y
+
+# CONFIG_RESET_GPIO (new since ~6.16) makes mmc_pwrseq_simple_probe() try to
+# resolve a single-entry "reset-gpios" through the generic reset-controller
+# framework instead of handling it directly. __reset_add_reset_gpio_device()
+# only supports GPIO providers with #gpio-cells = <2>, but sunxi pinctrl uses
+# #gpio-cells = <3>, so it fails with -ENOENT ("reset control not ready"),
+# aborting the wifi-pwrseq probe and leaving mmc1 (uwe5622 SDIO) dead.
+# Disabling it falls back to pwrseq_simple's own GPIO handling, as before.
+CONFIG_RESET_GPIO=n
+
+# hciattach_opi (the sprd/uwe5622 BT attach helper) reads the real BT MAC
+# from /sys/class/addr_mgt/addr_bt, which only exists if this Allwinner
+# driver (ported from Armbian, ../patches/linux/*-sunxi-addr*) is loaded.
+# Without it, hciattach_opi falls back to a hardcoded placeholder address
+# and a degraded capability set that never reports LE support, so
+# "bluetoothctl scan on" runs without error but never finds anything.
+# Built as a module (see patch 0004's commit message for why, not =y) and
+# loaded explicitly by S00modules before sprdwl_ng/hciattach_opi.
+CONFIG_SUNXI_ADDR_MGT=m
