@@ -4,7 +4,11 @@
 #
 ################################################################################
 
-UWE5622_VERSION = 9422f6e27168932270db03c3d37743679c710aaa
+# Pinned to match the exact commit Armbian's own build framework uses for
+# sunxi-6.18 (lib/functions/compilation/patch/drivers_network.sh,
+# driver_uwe5622()), so BT/WiFi behavior comparisons against a reference
+# Armbian build aren't skewed by driver version drift.
+UWE5622_VERSION = d6bec7538a0b4b67e35715ad71eaa056555524cb
 UWE5622_SITE = $(call github,armbian,uwe5622,$(UWE5622_VERSION))
 UWE5622_LICENSE = GPL-2.0
 
