@@ -4,3 +4,6 @@
 [submodule "externals/armbian-build"]
 	path = externals/armbian-build
 	url = https://github.com/armbian/build.git
+[submodule "externals/orangepi-build"]
+	path = externals/orangepi-build
+	url = https://github.com/orangepi-xunlong/orangepi-build.git
