@@ -19,7 +19,7 @@ on:
           - rpi5
           - radxa03w
           - milkv-duos
-          - orangepi_z2w
+          - orangepi-zero2w
 
 jobs:
   prepare:
