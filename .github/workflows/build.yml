@@ -22,7 +22,7 @@ on:
           - radxa03w
           - milkv-duos
           - milkv-duos-emmc
-          - orangepi-zero2w
+          - orangepi_zero2w
 
 jobs:
   prepare:
