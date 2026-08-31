@@ -58,14 +58,17 @@ diff --git a/drivers/usb/gadget/function/f_accessory.c b/drivers/usb/gadget/func
 index ce7814c22057..8a0ff683769c 100644
 --- a/drivers/usb/gadget/function/f_accessory.c
 +++ b/drivers/usb/gadget/function/f_accessory.c
-@@ -1084,7 +1084,6 @@ int acc_ctrlrequest(struct usb_composite_dev *cdev,
+@@ -1084,9 +1084,8 @@ int acc_ctrlrequest(struct usb_composite_dev *cdev,
  	put_acc_dev(dev);
  	return value;
  }
 -EXPORT_SYMBOL_GPL(acc_ctrlrequest);
  
- int acc_ctrlrequest_composite(struct usb_composite_dev *cdev,
+-int acc_ctrlrequest_composite(struct usb_composite_dev *cdev,
++static int acc_ctrlrequest_composite(struct usb_composite_dev *cdev,
  			      const struct usb_ctrlrequest *ctrl)
+ {
+ 	u16 w_length = le16_to_cpu(ctrl->wLength);
 @@ -1104,7 +1103,6 @@ int acc_ctrlrequest_composite(struct usb_composite_dev *cdev,
  	}
  	return acc_ctrlrequest(cdev, ctrl);
@@ -74,6 +77,15 @@ index ce7814c22057..8a0ff683769c 100644
  
  static int
  __acc_function_bind(struct usb_configuration *c,
+@@ -1438,7 +1436,7 @@ __acc_function_bind(struct usb_configuration *c,
+ 	return ret;
+ }
+ 
+-void acc_disconnect(void)
++static void acc_disconnect(void)
+ {
+ 	struct acc_dev *dev = get_acc_dev();
+ 
 @@ -1449,7 +1447,6 @@ void acc_disconnect(void)
  	kill_all_hid_devices(dev);
  	put_acc_dev(dev);

@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: aa-proxy-os <aa-proxy-os@localhost>
+Date: Mon, 31 Aug 2026 00:00:00 +0000
+Subject: [PATCH] usb: gadget: log f_accessory read-side completion errors
+
+acc_read()/acc_complete_out() silently swallowed most error paths
+(usb_ep_queue failure, an interrupted wait_event_interruptible, and any
+non-ESHUTDOWN completion status), making it impossible to correlate a
+userspace "EndpointIo read error" against what actually happened in the
+kernel. Add pr_err() on those paths, mirroring the existing diagnostics
+already added to the write side in 0018.
+
+---
+ drivers/usb/gadget/function/f_accessory.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/usb/gadget/function/f_accessory.c b/drivers/usb/gadget/function/f_accessory.c
+--- a/drivers/usb/gadget/function/f_accessory.c
++++ b/drivers/usb/gadget/function/f_accessory.c
+@@ -419,6 +419,9 @@
+ 	if (req->status == -ESHUTDOWN) {
+ 		pr_debug("acc_complete_out set disconnected");
+ 		acc_set_disconnected(dev);
++	} else if (req->status) {
++		pr_err("acc_complete_out: status %d, actual %u/%u\n",
++			req->status, req->actual, req->length);
+ 	}
+
+ 	wake_up(&dev->read_wq);
+@@ -749,6 +752,7 @@
+ 	dev->rx_done = 0;
+ 	ret = usb_ep_queue(dev->ep_out, req, GFP_KERNEL);
+ 	if (ret < 0) {
++		pr_err("acc_read: usb_ep_queue error %d\n", ret);
+ 		r = -EIO;
+ 		goto done;
+ 	} else {
+@@ -758,6 +762,7 @@
+ 	/* wait for a request to complete */
+ 	ret = wait_event_interruptible(dev->read_wq, dev->rx_done);
+ 	if (ret < 0) {
++		pr_err("acc_read: wait_event_interruptible error %d\n", ret);
+ 		r = ret;
+ 		ret = usb_ep_dequeue(dev->ep_out, req);
+ 		if (ret != 0) {
+--
+2.34.1
+
