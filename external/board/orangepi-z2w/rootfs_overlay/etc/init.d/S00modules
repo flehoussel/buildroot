@@ -6,6 +6,27 @@
 # (package external/package/uwe5622).
 #
 
+enable_debug_logging()
+{
+	# CONFIG_DYNAMIC_DEBUG pr_debug() calls are compiled in but silent by
+	# default; turn on the ones relevant to the USB accessory/musb-hdrc
+	# investigation so they show up in dmesg. debugfs isn't mounted by
+	# default on this BusyBox rootfs.
+	mount -t debugfs none /sys/kernel/debug 2>/dev/null
+	ctrl=/sys/kernel/debug/dynamic_debug/control
+	if [ -w "$ctrl" ]; then
+		for q in \
+			"file f_accessory.c +p" \
+			"file configfs.c +p" \
+			"file musb_core.c +p" \
+			"file musb_gadget.c +p" \
+			"file musb_host.c +p" \
+			"file sunxi.c +p"; do
+			echo "$q" > "$ctrl" 2>/dev/null
+		done
+	fi
+}
+
 start_usb_gadget()
 {
 	# CONFIG_USB_LIBCOMPOSITE is a module: without it,
@@ -51,6 +72,7 @@ start_wifi_bt()
 case "$1" in
 	start)
 		echo "Loading kernel modules..."
+		enable_debug_logging
 		start_usb_gadget
 		start_wifi_bt
 		;;
