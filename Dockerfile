@@ -1,4 +1,9 @@
-FROM debian:bookworm-slim
+################################
+# ARG to change base image dynamically
+# Useful when generating VS Code Dev Container
+################################
+ARG BASE_IMAGE=debian:bookworm-slim
+FROM ${BASE_IMAGE}
 
 ARG USERNAME=buildroot
 ARG UID=1000
@@ -32,6 +37,11 @@ RUN apt-get update && \
     ninja-build \
     sudo && \
 # Create user and group to not use root
+# (base images like mcr.microsoft.com/devcontainers/base:* already ship a
+# user/group on UID/GID 1000, e.g. "vscode" - remove it first if present so
+# groupadd/useradd below don't fail with "GID/UID already exists")
+    (getent passwd ${UID} | cut -d: -f1 | xargs -r userdel -r) 2>/dev/null; \
+    (getent group ${GID} | cut -d: -f1 | xargs -r groupdel) 2>/dev/null; \
     groupadd --gid ${GID} ${USERNAME} && \
     useradd --uid ${UID} --gid ${GID} -m ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \

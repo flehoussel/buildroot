@@ -1,0 +1,26 @@
+{
+    "name": "Dev Container",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "args": {
+            "BASE_IMAGE": "mcr.microsoft.com/devcontainers/base:bookworm"
+        }
+    },
+
+    "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+    "workspaceFolder": "${localWorkspaceFolder}",
+
+    "mounts": [
+        "source=${localEnv:HOME}/.claude,target=/home/buildroot/.claude,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.claude.json,target=/home/buildroot/.claude.json,type=bind,consistency=cached"
+    ],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                 "anthropic.claude-code"
+            ]
+        }
+    },
+    "remoteUser": "buildroot"
+}
