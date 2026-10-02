@@ -12,7 +12,7 @@ software =
 						type = "raw";
 						compressed = "zlib";
 						installed-directly = true;
-						device = "/dev/mmcblk1p2";
+						device = "/dev/mmcblk0p2";
 					}
 				);
 				bootenv: (
@@ -33,7 +33,7 @@ software =
 						type = "raw";
 						compressed = "zlib";
 						installed-directly = true;
-						device = "/dev/mmcblk1p3";
+						device = "/dev/mmcblk0p3";
 					}
 				);
 				bootenv: (
