@@ -3,7 +3,8 @@
 Standalone diagnostic scripts for the orangepi-z2w. They are not part of the
 image: copy them to the board and run them directly, no rebuild needed.
 
-- `measure-usb-load.sh` - CPU usage and musb-hdrc IRQ rate during a session
+- `measure-usb-load.sh` - CPU usage, musb-hdrc IRQ rate, WiFi throughput, CPU
+  frequency and temperature during a session
 
 ## Copying the scripts to the board
 
