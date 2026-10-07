@@ -52,6 +52,15 @@ start() {
 				# fields 14/15 (utime/stime); strip "pid (comm)" first, comm may hold spaces
 				sed 's/^[0-9]* ([^)]*) //' "/proc/$pid/stat" | awk '{print "P " $12, $13}'
 			fi
+			# wlan rx/tx bytes ("wlan0:123" may have no space after the colon)
+			sed 's/^ *//; s/:/ /' /proc/net/dev | awk -v i="$WLAN_IF" '$1 == i {print "N", $2, $10}'
+			# kHz
+			f=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null)
+			[ -n "$f" ] && echo "F $f"
+			# millidegrees C, one line per thermal zone
+			for z in /sys/class/thermal/thermal_zone*/temp; do
+				[ -r "$z" ] && echo "T $(cat "$z" 2>/dev/null)"
+			done
 			sleep 1
 		done
 	) >> "$RAW" &
